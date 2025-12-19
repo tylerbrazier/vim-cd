@@ -8,7 +8,7 @@ let s:dirs = {}
 
 silent! nnoremap <unique> c<Tab> :Cd<Space>
 
-command -nargs=1 -complete=customlist,s:complete Cd cd <args>
+command -nargs=1 -complete=customlist,s:complete Cd lcd <args>
 
 augroup vimcd
 	autocmd!
