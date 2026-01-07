@@ -1,6 +1,6 @@
 # vim-cd
 
-`c<Tab>` to change to recent directories
+Type `cd` to change to recent directories. History is persisted when vim exits.
 
 The mapping starts `:Cd` which works like `:lcd` but with completion that:
 
@@ -9,3 +9,9 @@ The mapping starts `:Cd` which works like `:lcd` but with completion that:
 
 I use this with [vim-forgit](https://github.com/tylerbrazier/vim-forgit)
 to switch between projects fast.
+
+## TODO
+
+- can `*` be used as part of the mapping instead of manual filtering?
+- completion should include local dirs too (not just history)
+- some way to manually cleanup history (edit the file?) and reload/persist

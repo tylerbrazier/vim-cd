@@ -6,9 +6,9 @@ let g:loaded_cd = 1
 " dictionary of dirname->timestamp
 let s:dirs = {}
 
-silent! nnoremap <unique> c<Tab> :Cd<Space>
+silent! nnoremap <unique> cd :Cd <C-D>
 
-command -nargs=1 -complete=customlist,s:complete Cd lcd <args>
+command -nargs=1 -complete=customlist,s:complete Cd silent lcd <args>
 
 augroup vimcd
 	autocmd!
