@@ -1,17 +1,19 @@
 # vim-cd
 
-Type `cd` to change to recent directories. History is persisted when vim exits.
+Type `cd` to change to recent directories.
 
-The mapping starts `:Cd` which works like `:lcd` but with completion that:
+The mapping starts `:ChDir` which works like `:lcd` but with completion that:
 
 - shows directories in most recently used order
 - filters matches anywhere in the name (not just the beginning)
 
-I use this with [vim-forgit](https://github.com/tylerbrazier/vim-forgit)
-to switch between projects fast.
+History is persisted to a local file. Use `:ChHist` to edit it.
+The plugin will reload the history when you write to the file,
+so you can use this for cleanup.
 
 ## TODO
 
 - can `*` be used as part of the mapping instead of manual filtering?
 - completion should include local dirs too (not just history)
-- some way to manually cleanup history (edit the file?) and reload/persist
+- allow disabling dirs from history e.g. use `0` for the timestamp
+- write to history (actually merge) when going to a new dir instead of on exit

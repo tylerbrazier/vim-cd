@@ -4,36 +4,45 @@ endif
 let g:loaded_cd = 1
 
 " dictionary of dirname->timestamp
-let s:dirs = {}
+let s:map = {}
+let s:file = (has('nvim') ? stdpath('data') : $MYVIMDIR)..'/cd_history'
 
-silent! nnoremap <unique> cd :Cd <C-D>
+silent! nnoremap <unique> cd :ChDir <C-D>
 
-command -nargs=1 -complete=customlist,s:complete Cd silent lcd <args>
+command -nargs=1 -complete=customlist,s:complete ChDir silent lcd <args>
+command ChHist exec 'new' s:file
 
 augroup vimcd
 	autocmd!
 	autocmd VimEnter * call s:load()
 	autocmd VimLeave * call s:persist()
 	autocmd DirChanged,VimEnter * call s:update()
+	exec 'autocmd BufWritePost' s:file 'call s:reload()'
 augroup END
 
 function s:update()
-	let s:dirs[s:cwd()] = strftime('%s')
+	let s:map[s:cwd()] = strftime('%s')
 endfunction
 
-function s:load()
-	silent! call readfile(s:file())
+function s:load() abort
+	if !filereadable(s:file)
+		call writefile([], s:file)
+	endif
+	call readfile(s:file)
 		\->map('split(v:val, ":")')
-		\->foreach('let s:dirs[v:val[0]] = v:val[1]')
+		\->foreach('let s:map[v:val[0]] = v:val[1]')
+endfunction
+
+function s:reload() abort
+	let s:map = {}
+	call s:load()
+	echo 'Reloaded cd history'
 endfunction
 
 function s:persist()
-	call writefile(items(s:dirs)->map('v:val[0]..":"..v:val[1]'), s:file())
-endfunction
-
-function s:file()
-	let d = has('nvim') ? stdpath('data') : $MYVIMDIR
-	return d..'/vimcd'
+	call writefile(
+		\items(s:map)->map('v:val[0]..":"..v:val[1]')->sort(),
+		\s:file)
 endfunction
 
 function s:cwd()
@@ -50,12 +59,12 @@ function s:sort(a, b)
 	elseif a:b == s:cwd()
 		return -1
 	else
-		return get(s:dirs, a:a) < get(s:dirs, a:b) ? 1 : -1
+		return get(s:map, a:a) < get(s:map, a:b) ? 1 : -1
 endfunction
 
 " :help :command-completion-customlist
 function s:complete(a,l,p)
-	return keys(s:dirs)
+	return keys(s:map)
 		\->filter({i,v -> stridx(v, a:a) >= 0})
 		\->sort(function('s:sort'))
 endfunction
