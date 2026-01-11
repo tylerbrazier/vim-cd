@@ -7,9 +7,9 @@ let g:loaded_cd = 1
 let s:map = {}
 let s:file = (has('nvim') ? stdpath('data') : $MYVIMDIR)..'/cd_history'
 
-silent! nnoremap <unique> cd :ChDir <C-D>
+silent! nnoremap <unique> cd :ChDir <C-D>*
 
-command -nargs=1 -complete=customlist,s:complete ChDir silent lcd <args>
+command -nargs=1 -complete=custom,s:complete ChDir silent lcd <args>
 command ChHist exec 'new' s:file
 
 augroup vimcd
@@ -62,9 +62,9 @@ function s:sort(a, b)
 		return get(s:map, a:a) < get(s:map, a:b) ? 1 : -1
 endfunction
 
-" :help :command-completion-customlist
+" :help :command-completion-custom
 function s:complete(a,l,p)
-	return keys(s:map)
-		\->filter({i,v -> stridx(v, a:a) >= 0})
-		\->sort(function('s:sort'))
+	return (keys(s:map)->sort(function('s:sort')) +
+		\getcompletion(a:a, 'dir')
+		\)->join("\n")
 endfunction
